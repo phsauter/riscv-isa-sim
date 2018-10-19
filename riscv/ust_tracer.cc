@@ -17,6 +17,8 @@ static bool has_output_header = false;
 
 void ust_open(const char *filename)
 {
+  if(!filename)
+    return;
   s_trace = fopen(filename, "w");
   if (!s_trace)
     fprintf(stderr, "Failed to open ust trace file %s: %s",
