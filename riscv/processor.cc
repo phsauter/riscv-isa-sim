@@ -5,6 +5,7 @@
 #include "common.h"
 #include "config.h"
 #include "simif.h"
+#include "ust_tracer.h"
 #include "mmu.h"
 #include "disasm.h"
 #include <cinttypes>
@@ -21,7 +22,7 @@
 
 processor_t::processor_t(const char* isa, simif_t* sim, uint32_t id,
         bool halt_on_reset)
-  : debug(false), halt_request(false), sim(sim), ext(NULL), id(id),
+    : debug(false), trace(false), halt_request(false), sim(sim), ext(NULL), id(id),
   halt_on_reset(halt_on_reset), last_pc(1), executions(1)
 {
   parse_isa_string(isa);
@@ -33,6 +34,8 @@ processor_t::processor_t(const char* isa, simif_t* sim, uint32_t id,
   if (ext)
     for (auto disasm_insn : ext->get_disasms())
       disassembler->add_insn(disasm_insn);
+
+  xlen = 0;
 
   reset();
 }
@@ -125,6 +128,8 @@ void state_t::reset(reg_t max_isa)
   misa = max_isa;
   prv = PRV_M;
   pc = DEFAULT_RSTVEC;
+  mstatus = 0;
+  dcsr.cause = 0;
   tselect = 0;
   for (unsigned int i = 0; i < num_triggers; i++)
     mcontrol[i].type = 2;
@@ -135,6 +140,13 @@ void processor_t::set_debug(bool value)
   debug = value;
   if (ext)
     ext->set_debug(value);
+}
+
+void processor_t::set_trace(bool value)
+{
+  trace = value;
+  if (ext)
+    ext->set_trace(value);
 }
 
 void processor_t::set_histogram(bool value)
@@ -251,6 +263,13 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
           t.get_tval());
   }
 
+  if (trace) {
+      ust_set_exception(t.cause());
+      if (t.has_tval())
+          ust_set_tval(t.get_tval());
+      ust_set_interrupt(0);
+  }
+
   if (state.dcsr.cause) {
     if (t.cause() == CAUSE_BREAKPOINT) {
       state.pc = DEBUG_ROM_ENTRY;
@@ -272,6 +291,11 @@ void processor_t::take_trap(trap_t& t, reg_t epc)
   reg_t bit = t.cause();
   reg_t deleg = state.medeleg;
   bool interrupt = (bit & ((reg_t)1 << (max_xlen-1))) != 0;
+
+  if (trace) {
+      ust_set_interrupt(interrupt);
+  }
+
   if (interrupt)
     deleg = state.mideleg, bit &= ~((reg_t)1 << (max_xlen-1));
   if (state.prv <= PRV_S && bit < max_xlen && ((deleg >> bit) & 1)) {
@@ -307,12 +331,22 @@ void processor_t::disasm(insn_t insn)
 {
   uint64_t bits = insn.bits() & ((1ULL << (8 * insn_length(insn.bits()))) - 1);
   if (last_pc != state.pc || last_bits != bits) {
-    if (executions != 1) {
+    if (debug && executions != 1) {
       fprintf(stderr, "core %3d: Executed %" PRIx64 " times\n", id, executions);
     }
 
-    fprintf(stderr, "core %3d: 0x%016" PRIx64 " (0x%08" PRIx64 ") %s\n",
-            id, state.pc, bits, disassembler->disassemble(insn).c_str());
+    if (debug) {
+      fprintf(stderr, "core %3d: 0x%016" PRIx64 " (0x%08" PRIx64 ") %s\n",
+              id, state.pc, bits, disassembler->disassemble(insn).c_str());
+    }
+
+    if (trace) {
+      ust_step();
+      ust_set_addr(state.pc);
+      ust_set_insn(bits);
+      ust_set_priv(state.prv);
+    }
+
     last_pc = state.pc;
     last_bits = bits;
     executions = 1;

@@ -166,6 +166,7 @@ public:
   ~processor_t();
 
   void set_debug(bool value);
+  void set_trace(bool value);
   void set_histogram(bool value);
   void reset();
   void step(size_t n); // run for n cycles
@@ -207,6 +208,8 @@ public:
 
   // When true, display disassembly of each instruction that's executed.
   bool debug;
+  // When true, write the UST trace
+  bool trace;
   // When true, take the slow simulation path.
   bool slow_path();
   bool halted() { return state.dcsr.cause ? true : false; }

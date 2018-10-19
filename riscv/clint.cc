@@ -4,6 +4,7 @@
 clint_t::clint_t(std::vector<processor_t*>& procs)
   : procs(procs), mtimecmp(procs.size())
 {
+  mtime = 0;
 }
 
 /* 0000 msip hart 0

@@ -36,6 +36,7 @@ static void help()
   fprintf(stderr, "  --extlib=<name>       Shared library to load\n");
   fprintf(stderr, "  --rbb-port=<port>     Listen on <port> for remote bitbang connection\n");
   fprintf(stderr, "  --dump-dts            Print device tree string and exit\n");
+  fprintf(stderr, "  --ust-trace=<file>    Write UST trace file\n");
   fprintf(stderr, "  --disable-dtb         Don't write the device tree blob into memory\n");
   fprintf(stderr, "  --progsize=<words>    Progsize for the debug module [default 2]\n");
   fprintf(stderr, "  --debug-sba=<bits>    Debug bus master supports up to "
@@ -91,6 +92,7 @@ int main(int argc, char** argv)
   std::unique_ptr<cache_sim_t> l2;
   std::function<extension_t*()> extension;
   const char* isa = DEFAULT_ISA;
+  const char* ust_file = NULL;
   uint16_t rbb_port = 0;
   bool use_rbb = false;
   unsigned progsize = 2;
@@ -129,6 +131,7 @@ int main(int argc, char** argv)
   parser.option(0, "isa", 1, [&](const char* s){isa = s;});
   parser.option(0, "extension", 1, [&](const char* s){extension = find_extension(s);});
   parser.option(0, "dump-dts", 0, [&](const char *s){dump_dts = true;});
+  parser.option(0, "ust-trace", 1, [&](const char *s){ust_file = s;});
   parser.option(0, "disable-dtb", 0, [&](const char *s){dtb_enabled = false;});
   parser.option(0, "extlib", 1, [&](const char *s){
     void *lib = dlopen(s, RTLD_NOW | RTLD_GLOBAL);
@@ -177,6 +180,7 @@ int main(int argc, char** argv)
 
   s.set_debug(debug);
   s.set_log(log);
+  s.set_ust_trace(ust_file);
   s.set_histogram(histogram);
   return s.run();
 }
