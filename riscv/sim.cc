@@ -1,6 +1,7 @@
 // See LICENSE for license details.
 
 #include "sim.h"
+#include "ust_tracer.h"
 #include "mmu.h"
 #include "dts.h"
 #include "remote_bitbang.h"
@@ -30,7 +31,7 @@ sim_t::sim_t(const char* isa, size_t nprocs, bool halted, reg_t start_pc,
              std::vector<int> const hartids, unsigned progsize,
              unsigned max_bus_master_bits, bool require_authentication)
   : htif_t(args), mems(mems), procs(std::max(nprocs, size_t(1))),
-    start_pc(start_pc), current_step(0), current_proc(0), debug(false),
+    start_pc(start_pc), current_step(0), current_proc(0), debug(false), trace(false),
     histogram_enabled(false), dtb_enabled(true), remote_bitbang(NULL),
     debug_module(this, progsize, max_bus_master_bits, require_authentication)
 {
@@ -64,6 +65,7 @@ sim_t::sim_t(const char* isa, size_t nprocs, bool halted, reg_t start_pc,
 
 sim_t::~sim_t()
 {
+  ust_close();
   for (size_t i = 0; i < procs.size(); i++)
     delete procs[i];
   delete debug_mmu;
@@ -78,6 +80,9 @@ void sim_t::main()
 {
   if (!debug && log)
     set_procs_debug(true);
+
+  if (!debug && trace)
+    set_procs_trace(true);
 
   while (!done())
   {
@@ -130,6 +135,12 @@ void sim_t::set_log(bool value)
   log = value;
 }
 
+void sim_t::set_ust_trace(const char * const ust_file)
+{
+  ust_open(ust_file);
+  trace = true;
+}
+
 void sim_t::set_histogram(bool value)
 {
   histogram_enabled = value;
@@ -142,6 +153,12 @@ void sim_t::set_procs_debug(bool value)
 {
   for (size_t i=0; i< procs.size(); i++)
     procs[i]->set_debug(value);
+}
+
+void sim_t::set_procs_trace(bool value)
+{
+  for (size_t i=0; i< procs.size(); i++)
+    procs[i]->set_trace(value);
 }
 
 bool sim_t::mmio_load(reg_t addr, size_t len, uint8_t* bytes)

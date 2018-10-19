@@ -30,8 +30,10 @@ public:
   int run();
   void set_debug(bool value);
   void set_log(bool value);
+  void set_ust_trace(const char * const ust_file);
   void set_histogram(bool value);
   void set_procs_debug(bool value);
+  void set_procs_trace(bool value);
   void set_dtb_enabled(bool value) {
     this->dtb_enabled = value;
   }
@@ -64,6 +66,7 @@ private:
   size_t current_proc;
   bool debug;
   bool log;
+  bool trace;
   bool histogram_enabled; // provide a histogram of PCs
   bool dtb_enabled;
   remote_bitbang_t* remote_bitbang;
