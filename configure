@@ -626,7 +626,8 @@ ac_subst_vars='LTLIBOBJS
 LIBOBJS
 subprojects_enabled
 subprojects
-stow
+HAVE_DLOPEN
+HAVE_INT128
 INSTALL_DATA
 INSTALL_SCRIPT
 INSTALL_PROGRAM
@@ -702,7 +703,8 @@ enable_option_checking
 enable_stow
 enable_optional_subprojects
 with_isa
-with_fesvr
+with_priv
+with_varch
 enable_commitlog
 enable_histogram
 enable_dirty
@@ -1360,8 +1362,9 @@ Optional Packages:
   --with-PACKAGE[=ARG]    use PACKAGE [ARG=yes]
   --without-PACKAGE       do not use PACKAGE (same as --with-PACKAGE=no)
   --with-isa=RV64IMAFDC   Sets the default RISC-V ISA
-  --with-fesvr            path to your fesvr installation if not in a standard
-                          location
+  --with-priv=MSU         Sets the default RISC-V privilege modes supported
+  --with-varch=vlen:128,elen:64,slen:128
+                          Sets the default vector config
 
 Some influential environment variables:
   CC          C compiler command
@@ -1642,6 +1645,60 @@ $as_echo "$ac_res" >&6; }
   eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
 
 } # ac_fn_cxx_check_header_compile
+
+# ac_fn_cxx_check_type LINENO TYPE VAR INCLUDES
+# ---------------------------------------------
+# Tests whether TYPE exists after having included INCLUDES, setting cache
+# variable VAR accordingly.
+ac_fn_cxx_check_type ()
+{
+  as_lineno=${as_lineno-"$1"} as_lineno_stack=as_lineno_stack=$as_lineno_stack
+  { $as_echo "$as_me:${as_lineno-$LINENO}: checking for $2" >&5
+$as_echo_n "checking for $2... " >&6; }
+if eval \${$3+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  eval "$3=no"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+if (sizeof ($2))
+	 return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+$4
+int
+main ()
+{
+if (sizeof (($2)))
+	    return 0;
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_compile "$LINENO"; then :
+
+else
+  eval "$3=yes"
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+rm -f core conftest.err conftest.$ac_objext conftest.$ac_ext
+fi
+eval ac_res=\$$3
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+  eval $as_lineno_stack; ${as_lineno_stack:+:} unset as_lineno
+
+} # ac_fn_cxx_check_type
 
 # ac_fn_cxx_try_link LINENO
 # -------------------------
@@ -2145,6 +2202,152 @@ shift; shift
 host_os=$*
 IFS=$ac_save_IFS
 case $host_os in *\ *) host_os=`echo "$host_os" | sed 's/ /-/g'`;; esac
+
+
+
+# ===========================================================================
+#    https://www.gnu.org/software/autoconf-archive/ax_require_defined.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_REQUIRE_DEFINED(MACRO)
+#
+# DESCRIPTION
+#
+#   AX_REQUIRE_DEFINED is a simple helper for making sure other macros have
+#   been defined and thus are available for use.  This avoids random issues
+#   where a macro isn't expanded.  Instead the configure script emits a
+#   non-fatal:
+#
+#     ./configure: line 1673: AX_CFLAGS_WARN_ALL: command not found
+#
+#   It's like AC_REQUIRE except it doesn't expand the required macro.
+#
+#   Here's an example:
+#
+#     AX_REQUIRE_DEFINED([AX_CHECK_LINK_FLAG])
+#
+# LICENSE
+#
+#   Copyright (c) 2014 Mike Frysinger <vapier@gentoo.org>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved. This file is offered as-is, without any
+#   warranty.
+
+#serial 2
+
+
+# ===========================================================================
+#      https://www.gnu.org/software/autoconf-archive/ax_append_flag.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_APPEND_FLAG(FLAG, [FLAGS-VARIABLE])
+#
+# DESCRIPTION
+#
+#   FLAG is appended to the FLAGS-VARIABLE shell variable, with a space
+#   added in between.
+#
+#   If FLAGS-VARIABLE is not specified, the current language's flags (e.g.
+#   CFLAGS) is used.  FLAGS-VARIABLE is not changed if it already contains
+#   FLAG.  If FLAGS-VARIABLE is unset in the shell, it is set to exactly
+#   FLAG.
+#
+#   NOTE: Implementation based on AX_CFLAGS_GCC_OPTION.
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Guido U. Draheim <guidod@gmx.de>
+#   Copyright (c) 2011 Maarten Bosmans <mkbosmans@gmail.com>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved.  This file is offered as-is, without any
+#   warranty.
+
+#serial 8
+
+
+# ===========================================================================
+#    https://www.gnu.org/software/autoconf-archive/ax_check_link_flag.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_CHECK_LINK_FLAG(FLAG, [ACTION-SUCCESS], [ACTION-FAILURE], [EXTRA-FLAGS], [INPUT])
+#
+# DESCRIPTION
+#
+#   Check whether the given FLAG works with the linker or gives an error.
+#   (Warnings, however, are ignored)
+#
+#   ACTION-SUCCESS/ACTION-FAILURE are shell commands to execute on
+#   success/failure.
+#
+#   If EXTRA-FLAGS is defined, it is added to the linker's default flags
+#   when the check is done.  The check is thus made with the flags: "LDFLAGS
+#   EXTRA-FLAGS FLAG".  This can for example be used to force the linker to
+#   issue an error when a bad flag is given.
+#
+#   INPUT gives an alternative input source to AC_LINK_IFELSE.
+#
+#   NOTE: Implementation based on AX_CFLAGS_GCC_OPTION. Please keep this
+#   macro in sync with AX_CHECK_{PREPROC,COMPILE}_FLAG.
+#
+# LICENSE
+#
+#   Copyright (c) 2008 Guido U. Draheim <guidod@gmx.de>
+#   Copyright (c) 2011 Maarten Bosmans <mkbosmans@gmail.com>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved.  This file is offered as-is, without any
+#   warranty.
+
+#serial 6
+
+
+# ===========================================================================
+#   https://www.gnu.org/software/autoconf-archive/ax_append_link_flags.html
+# ===========================================================================
+#
+# SYNOPSIS
+#
+#   AX_APPEND_LINK_FLAGS([FLAG1 FLAG2 ...], [FLAGS-VARIABLE], [EXTRA-FLAGS], [INPUT])
+#
+# DESCRIPTION
+#
+#   For every FLAG1, FLAG2 it is checked whether the linker works with the
+#   flag.  If it does, the flag is added FLAGS-VARIABLE
+#
+#   If FLAGS-VARIABLE is not specified, the linker's flags (LDFLAGS) is
+#   used. During the check the flag is always added to the linker's flags.
+#
+#   If EXTRA-FLAGS is defined, it is added to the linker's default flags
+#   when the check is done.  The check is thus made with the flags: "LDFLAGS
+#   EXTRA-FLAGS FLAG".  This can for example be used to force the linker to
+#   issue an error when a bad flag is given.
+#
+#   INPUT gives an alternative input source to AC_COMPILE_IFELSE.
+#
+#   NOTE: This macro depends on the AX_APPEND_FLAG and AX_CHECK_LINK_FLAG.
+#   Please keep this macro in sync with AX_APPEND_COMPILE_FLAGS.
+#
+# LICENSE
+#
+#   Copyright (c) 2011 Maarten Bosmans <mkbosmans@gmail.com>
+#
+#   Copying and distribution of this file, with or without modification, are
+#   permitted in any medium without royalty provided the copyright notice
+#   and this notice are preserved.  This file is offered as-is, without any
+#   warranty.
+
+#serial 7
 
 
 
@@ -3428,7 +3631,7 @@ if test x"$DTC" == xno; then :
 fi
 
 cat >>confdefs.h <<_ACEOF
-#define DTC "$DTC"
+#define DTC "dtc"
 _ACEOF
 
 
@@ -4036,7 +4239,8 @@ fi
 $as_echo "$ac_cv_c_bigendian" >&6; }
  case $ac_cv_c_bigendian in #(
    yes)
-     as_fn_error $? "Spike requires a little-endian host" "$LINENO" 5;; #(
+     $as_echo "#define WORDS_BIGENDIAN 1" >>confdefs.h
+;; #(
    no)
       ;; #(
    universal)
@@ -4173,102 +4377,6 @@ fi
 
 
 
-  # Deterimine if native build and set prefix appropriately
-
-  if  test ${enable_stow} = "yes" ; then :
-
-    for ac_prog in stow
-do
-  # Extract the first word of "$ac_prog", so it can be a program name with args.
-set dummy $ac_prog; ac_word=$2
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for $ac_word" >&5
-$as_echo_n "checking for $ac_word... " >&6; }
-if ${ac_cv_prog_stow+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  if test -n "$stow"; then
-  ac_cv_prog_stow="$stow" # Let the user override the test.
-else
-as_save_IFS=$IFS; IFS=$PATH_SEPARATOR
-for as_dir in $PATH
-do
-  IFS=$as_save_IFS
-  test -z "$as_dir" && as_dir=.
-    for ac_exec_ext in '' $ac_executable_extensions; do
-  if as_fn_executable_p "$as_dir/$ac_word$ac_exec_ext"; then
-    ac_cv_prog_stow="$ac_prog"
-    $as_echo "$as_me:${as_lineno-$LINENO}: found $as_dir/$ac_word$ac_exec_ext" >&5
-    break 2
-  fi
-done
-  done
-IFS=$as_save_IFS
-
-fi
-fi
-stow=$ac_cv_prog_stow
-if test -n "$stow"; then
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $stow" >&5
-$as_echo "$stow" >&6; }
-else
-  { $as_echo "$as_me:${as_lineno-$LINENO}: result: no" >&5
-$as_echo "no" >&6; }
-fi
-
-
-  test -n "$stow" && break
-done
-test -n "$stow" || stow="no"
-
-    if  test ${stow} = "no" ; then :
-
-      as_fn_error $? "Cannot use --enable-stow since stow is not available" "$LINENO" 5
-
-fi
-
-    # Check if native or non-native build
-
-    if  test "${build}" = "${host}" ; then :
-
-
-      # build == host so this is a native build. Make sure --prefix not
-      # set and $STOW_PREFIX is set, then set prefix=$STOW_PREFIX.
-
-      if  test "${prefix}" = "NONE" && test -n "${STOW_PREFIX}" ; then :
-
-        prefix="${STOW_PREFIX}"
-        { $as_echo "$as_me:${as_lineno-$LINENO}: Using \$STOW_PREFIX from environment" >&5
-$as_echo "$as_me: Using \$STOW_PREFIX from environment" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: prefix=${prefix}" >&5
-$as_echo "$as_me: prefix=${prefix}" >&6;}
-
-fi
-
-
-else
-
-
-      # build != host so this is a non-native build. Make sure --prefix
-      # not set and $STOW_ROOT is set, then set
-      # prefix=$STOW_ROOT/${host_alias}.
-
-      if  test "${prefix}" = "NONE" && test -n "${STOW_ROOT}" ; then :
-
-        prefix="${STOW_ROOT}/${host_alias}"
-        { $as_echo "$as_me:${as_lineno-$LINENO}: Using \$STOW_ROOT from environment" >&5
-$as_echo "$as_me: Using \$STOW_ROOT from environment" >&6;}
-        { $as_echo "$as_me:${as_lineno-$LINENO}: prefix=${prefix}" >&5
-$as_echo "$as_me: prefix=${prefix}" >&6;}
-
-fi
-
-
-fi
-
-
-fi
-
-
 
 #-------------------------------------------------------------------------
 # Checks for header files
@@ -4388,12 +4496,95 @@ fi
 
 
 #-------------------------------------------------------------------------
+# Checks for type
+#-------------------------------------------------------------------------
+
+ac_fn_cxx_check_type "$LINENO" "__int128_t" "ac_cv_type___int128_t" "$ac_includes_default"
+if test "x$ac_cv_type___int128_t" = xyes; then :
+  HAVE_INT128=yes
+
+fi
+
+
+#-------------------------------------------------------------------------
 # Default compiler flags
 #-------------------------------------------------------------------------
 
-CFLAGS="-Wall -Wno-unused -g -O2"
 
-CXXFLAGS="-Wall -Wno-unused -g -O2 -std=c++11"
+
+
+
+for flag in -Wl,--export-dynamic; do
+  as_CACHEVAR=`$as_echo "ax_cv_check_ldflags__$flag" | $as_tr_sh`
+{ $as_echo "$as_me:${as_lineno-$LINENO}: checking whether the linker accepts $flag" >&5
+$as_echo_n "checking whether the linker accepts $flag... " >&6; }
+if eval \${$as_CACHEVAR+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+
+  ax_check_save_flags=$LDFLAGS
+  LDFLAGS="$LDFLAGS  $flag"
+  cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+int
+main ()
+{
+
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  eval "$as_CACHEVAR=yes"
+else
+  eval "$as_CACHEVAR=no"
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+  LDFLAGS=$ax_check_save_flags
+fi
+eval ac_res=\$$as_CACHEVAR
+	       { $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_res" >&5
+$as_echo "$ac_res" >&6; }
+if eval test \"x\$"$as_CACHEVAR"\" = x"yes"; then :
+
+if ${LDFLAGS+:} false; then :
+
+  case " $LDFLAGS " in #(
+  *" $flag "*) :
+    { { $as_echo "$as_me:${as_lineno-$LINENO}: : LDFLAGS already contains \$flag"; } >&5
+  (: LDFLAGS already contains $flag) 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; } ;; #(
+  *) :
+
+     as_fn_append LDFLAGS " $flag"
+     { { $as_echo "$as_me:${as_lineno-$LINENO}: : LDFLAGS=\"\$LDFLAGS\""; } >&5
+  (: LDFLAGS="$LDFLAGS") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+     ;;
+esac
+
+else
+
+  LDFLAGS=$flag
+  { { $as_echo "$as_me:${as_lineno-$LINENO}: : LDFLAGS=\"\$LDFLAGS\""; } >&5
+  (: LDFLAGS="$LDFLAGS") 2>&5
+  ac_status=$?
+  $as_echo "$as_me:${as_lineno-$LINENO}: \$? = $ac_status" >&5
+  test $ac_status = 0; }
+
+fi
+
+else
+  :
+fi
+
+done
 
 
 #-------------------------------------------------------------------------
@@ -4414,6 +4605,98 @@ fi
 
 
   # Loop through the subprojects given in the macro argument
+
+
+
+    # Determine if this is a required or an optional subproject
+
+
+
+    # Determine if there is a group with the same name
+
+
+
+    # Create variations of the subproject name suitable for use as a CPP
+    # enabled define, a shell enabled variable, and a shell function
+
+
+
+
+
+
+
+
+
+
+
+    # Add subproject to our running list
+
+    subprojects="$subprojects fesvr"
+
+    # Process the subproject appropriately. If enabled add it to the
+    # $enabled_subprojects running shell variable, set a
+    # SUBPROJECT_ENABLED C define, and include the appropriate
+    # 'subproject.ac'.
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : fesvr" >&5
+$as_echo "$as_me: configuring default subproject : fesvr" >&6;}
+      ac_config_files="$ac_config_files fesvr.mk:fesvr/fesvr.mk.in"
+
+      enable_fesvr_sproj="yes"
+      subprojects_enabled="$subprojects_enabled fesvr"
+
+$as_echo "#define FESVR_ENABLED /**/" >>confdefs.h
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: checking for pthread_create in -lpthread" >&5
+$as_echo_n "checking for pthread_create in -lpthread... " >&6; }
+if ${ac_cv_lib_pthread_pthread_create+:} false; then :
+  $as_echo_n "(cached) " >&6
+else
+  ac_check_lib_save_LIBS=$LIBS
+LIBS="-lpthread  $LIBS"
+cat confdefs.h - <<_ACEOF >conftest.$ac_ext
+/* end confdefs.h.  */
+
+/* Override any GCC internal prototype to avoid an error.
+   Use char because int might match the return type of a GCC
+   builtin and then its argument prototype would still apply.  */
+#ifdef __cplusplus
+extern "C"
+#endif
+char pthread_create ();
+int
+main ()
+{
+return pthread_create ();
+  ;
+  return 0;
+}
+_ACEOF
+if ac_fn_cxx_try_link "$LINENO"; then :
+  ac_cv_lib_pthread_pthread_create=yes
+else
+  ac_cv_lib_pthread_pthread_create=no
+fi
+rm -f core conftest.err conftest.$ac_objext \
+    conftest$ac_exeext conftest.$ac_ext
+LIBS=$ac_check_lib_save_LIBS
+fi
+{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_pthread_pthread_create" >&5
+$as_echo "$ac_cv_lib_pthread_pthread_create" >&6; }
+if test "x$ac_cv_lib_pthread_pthread_create" = xyes; then :
+  cat >>confdefs.h <<_ACEOF
+#define HAVE_LIBPTHREAD 1
+_ACEOF
+
+  LIBS="-lpthread $LIBS"
+
+else
+  as_fn_error $? "libpthread is required" "$LINENO" 5
+fi
+
+
+
 
 
 
@@ -4481,6 +4764,41 @@ _ACEOF
 fi
 
 
+
+# Check whether --with-priv was given.
+if test "${with_priv+set}" = set; then :
+  withval=$with_priv;
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_PRIV "$withval"
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_PRIV "MSU"
+_ACEOF
+
+fi
+
+
+
+# Check whether --with-varch was given.
+if test "${with_varch+set}" = set; then :
+  withval=$with_varch;
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_VARCH "$withval"
+_ACEOF
+
+else
+
+cat >>confdefs.h <<_ACEOF
+#define DEFAULT_VARCH "vlen:128,elen:64,slen:128"
+_ACEOF
+
+fi
+
+
+
 { $as_echo "$as_me:${as_lineno-$LINENO}: checking for library containing dlopen" >&5
 $as_echo_n "checking for library containing dlopen... " >&6; }
 if ${ac_cv_search_dlopen+:} false; then :
@@ -4535,69 +4853,12 @@ ac_res=$ac_cv_search_dlopen
 if test "$ac_res" != no; then :
   test "$ac_res" = "none required" || LIBS="$ac_res $LIBS"
 
-else
 
-  as_fn_error $? "unable to find the dlopen() function" "$LINENO" 5
-
-fi
-
+$as_echo "#define HAVE_DLOPEN /**/" >>confdefs.h
+,
+  HAVE_DLOPEN=yes
 
 
-# Check whether --with-fesvr was given.
-if test "${with_fesvr+set}" = set; then :
-  withval=$with_fesvr;
-    LDFLAGS="-L$withval/lib $LDFLAGS"
-    CPPFLAGS="-I$withval/include $CPPFLAGS"
-
-
-fi
-
-
-{ $as_echo "$as_me:${as_lineno-$LINENO}: checking for libfesvr_is_present in -lfesvr" >&5
-$as_echo_n "checking for libfesvr_is_present in -lfesvr... " >&6; }
-if ${ac_cv_lib_fesvr_libfesvr_is_present+:} false; then :
-  $as_echo_n "(cached) " >&6
-else
-  ac_check_lib_save_LIBS=$LIBS
-LIBS="-lfesvr -pthread $LIBS"
-cat confdefs.h - <<_ACEOF >conftest.$ac_ext
-/* end confdefs.h.  */
-
-/* Override any GCC internal prototype to avoid an error.
-   Use char because int might match the return type of a GCC
-   builtin and then its argument prototype would still apply.  */
-#ifdef __cplusplus
-extern "C"
-#endif
-char libfesvr_is_present ();
-int
-main ()
-{
-return libfesvr_is_present ();
-  ;
-  return 0;
-}
-_ACEOF
-if ac_fn_cxx_try_link "$LINENO"; then :
-  ac_cv_lib_fesvr_libfesvr_is_present=yes
-else
-  ac_cv_lib_fesvr_libfesvr_is_present=no
-fi
-rm -f core conftest.err conftest.$ac_objext \
-    conftest$ac_exeext conftest.$ac_ext
-LIBS=$ac_check_lib_save_LIBS
-fi
-{ $as_echo "$as_me:${as_lineno-$LINENO}: result: $ac_cv_lib_fesvr_libfesvr_is_present" >&5
-$as_echo "$ac_cv_lib_fesvr_libfesvr_is_present" >&6; }
-if test "x$ac_cv_lib_fesvr_libfesvr_is_present" = xyes; then :
-  cat >>confdefs.h <<_ACEOF
-#define HAVE_LIBFESVR 1
-_ACEOF
-
-  LIBS="-lfesvr $LIBS"
-
-else
-  as_fn_error $? "libfesvr is required" "$LINENO" 5
 fi
 
 
@@ -4728,7 +4989,7 @@ fi
 
     # Add subproject to our running list
 
-    subprojects="$subprojects dummy_rocc"
+    subprojects="$subprojects disasm"
 
     # Process the subproject appropriately. If enabled add it to the
     # $enabled_subprojects running shell variable, set a
@@ -4736,14 +4997,104 @@ fi
     # 'subproject.ac'.
 
 
-      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : dummy_rocc" >&5
-$as_echo "$as_me: configuring default subproject : dummy_rocc" >&6;}
-      ac_config_files="$ac_config_files dummy_rocc.mk:dummy_rocc/dummy_rocc.mk.in"
+      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : disasm" >&5
+$as_echo "$as_me: configuring default subproject : disasm" >&6;}
+      ac_config_files="$ac_config_files disasm.mk:disasm/disasm.mk.in"
 
-      enable_dummy_rocc_sproj="yes"
-      subprojects_enabled="$subprojects_enabled dummy_rocc"
+      enable_disasm_sproj="yes"
+      subprojects_enabled="$subprojects_enabled disasm"
 
-$as_echo "#define DUMMY_ROCC_ENABLED /**/" >>confdefs.h
+$as_echo "#define DISASM_ENABLED /**/" >>confdefs.h
+
+
+
+
+
+
+    # Determine if this is a required or an optional subproject
+
+
+
+    # Determine if there is a group with the same name
+
+
+
+    # Create variations of the subproject name suitable for use as a CPP
+    # enabled define, a shell enabled variable, and a shell function
+
+
+
+
+
+
+
+
+
+
+
+    # Add subproject to our running list
+
+    subprojects="$subprojects customext"
+
+    # Process the subproject appropriately. If enabled add it to the
+    # $enabled_subprojects running shell variable, set a
+    # SUBPROJECT_ENABLED C define, and include the appropriate
+    # 'subproject.ac'.
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : customext" >&5
+$as_echo "$as_me: configuring default subproject : customext" >&6;}
+      ac_config_files="$ac_config_files customext.mk:customext/customext.mk.in"
+
+      enable_customext_sproj="yes"
+      subprojects_enabled="$subprojects_enabled customext"
+
+$as_echo "#define CUSTOMEXT_ENABLED /**/" >>confdefs.h
+
+
+
+
+
+
+    # Determine if this is a required or an optional subproject
+
+
+
+    # Determine if there is a group with the same name
+
+
+
+    # Create variations of the subproject name suitable for use as a CPP
+    # enabled define, a shell enabled variable, and a shell function
+
+
+
+
+
+
+
+
+
+
+
+    # Add subproject to our running list
+
+    subprojects="$subprojects fdt"
+
+    # Process the subproject appropriately. If enabled add it to the
+    # $enabled_subprojects running shell variable, set a
+    # SUBPROJECT_ENABLED C define, and include the appropriate
+    # 'subproject.ac'.
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : fdt" >&5
+$as_echo "$as_me: configuring default subproject : fdt" >&6;}
+      ac_config_files="$ac_config_files fdt.mk:fdt/fdt.mk.in"
+
+      enable_fdt_sproj="yes"
+      subprojects_enabled="$subprojects_enabled fdt"
+
+$as_echo "#define FDT_ENABLED /**/" >>confdefs.h
 
 
 
@@ -4840,6 +5191,51 @@ $as_echo "#define SPIKE_MAIN_ENABLED /**/" >>confdefs.h
 
 
 
+    # Determine if this is a required or an optional subproject
+
+
+
+    # Determine if there is a group with the same name
+
+
+
+    # Create variations of the subproject name suitable for use as a CPP
+    # enabled define, a shell enabled variable, and a shell function
+
+
+
+
+
+
+
+
+
+
+
+    # Add subproject to our running list
+
+    subprojects="$subprojects spike_dasm"
+
+    # Process the subproject appropriately. If enabled add it to the
+    # $enabled_subprojects running shell variable, set a
+    # SUBPROJECT_ENABLED C define, and include the appropriate
+    # 'subproject.ac'.
+
+
+      { $as_echo "$as_me:${as_lineno-$LINENO}: configuring default subproject : spike_dasm" >&5
+$as_echo "$as_me: configuring default subproject : spike_dasm" >&6;}
+      ac_config_files="$ac_config_files spike_dasm.mk:spike_dasm/spike_dasm.mk.in"
+
+      enable_spike_dasm_sproj="yes"
+      subprojects_enabled="$subprojects_enabled spike_dasm"
+
+$as_echo "#define SPIKE_DASM_ENABLED /**/" >>confdefs.h
+
+
+
+
+
+
   # Output make variables
 
 
@@ -4866,15 +5262,9 @@ ac_config_headers="$ac_config_headers config.h"
 
 ac_config_files="$ac_config_files Makefile"
 
-ac_config_files="$ac_config_files riscv-spike.pc"
+ac_config_files="$ac_config_files riscv-fesvr.pc"
 
-ac_config_files="$ac_config_files riscv-riscv.pc"
-
-ac_config_files="$ac_config_files riscv-softfloat.pc"
-
-ac_config_files="$ac_config_files riscv-dummy_rocc.pc"
-
-ac_config_files="$ac_config_files riscv-spike_main.pc"
+ac_config_files="$ac_config_files riscv-disasm.pc"
 
 cat >confcache <<\_ACEOF
 # This file is a shell script that caches the results of configure
@@ -5567,17 +5957,18 @@ cat >>$CONFIG_STATUS <<\_ACEOF || ac_write_fail=1
 for ac_config_target in $ac_config_targets
 do
   case $ac_config_target in
+    "fesvr.mk") CONFIG_FILES="$CONFIG_FILES fesvr.mk:fesvr/fesvr.mk.in" ;;
     "riscv.mk") CONFIG_FILES="$CONFIG_FILES riscv.mk:riscv/riscv.mk.in" ;;
-    "dummy_rocc.mk") CONFIG_FILES="$CONFIG_FILES dummy_rocc.mk:dummy_rocc/dummy_rocc.mk.in" ;;
+    "disasm.mk") CONFIG_FILES="$CONFIG_FILES disasm.mk:disasm/disasm.mk.in" ;;
+    "customext.mk") CONFIG_FILES="$CONFIG_FILES customext.mk:customext/customext.mk.in" ;;
+    "fdt.mk") CONFIG_FILES="$CONFIG_FILES fdt.mk:fdt/fdt.mk.in" ;;
     "softfloat.mk") CONFIG_FILES="$CONFIG_FILES softfloat.mk:softfloat/softfloat.mk.in" ;;
     "spike_main.mk") CONFIG_FILES="$CONFIG_FILES spike_main.mk:spike_main/spike_main.mk.in" ;;
+    "spike_dasm.mk") CONFIG_FILES="$CONFIG_FILES spike_dasm.mk:spike_dasm/spike_dasm.mk.in" ;;
     "config.h") CONFIG_HEADERS="$CONFIG_HEADERS config.h" ;;
     "Makefile") CONFIG_FILES="$CONFIG_FILES Makefile" ;;
-    "riscv-spike.pc") CONFIG_FILES="$CONFIG_FILES riscv-spike.pc" ;;
-    "riscv-riscv.pc") CONFIG_FILES="$CONFIG_FILES riscv-riscv.pc" ;;
-    "riscv-softfloat.pc") CONFIG_FILES="$CONFIG_FILES riscv-softfloat.pc" ;;
-    "riscv-dummy_rocc.pc") CONFIG_FILES="$CONFIG_FILES riscv-dummy_rocc.pc" ;;
-    "riscv-spike_main.pc") CONFIG_FILES="$CONFIG_FILES riscv-spike_main.pc" ;;
+    "riscv-fesvr.pc") CONFIG_FILES="$CONFIG_FILES riscv-fesvr.pc" ;;
+    "riscv-disasm.pc") CONFIG_FILES="$CONFIG_FILES riscv-disasm.pc" ;;
 
   *) as_fn_error $? "invalid argument: \`$ac_config_target'" "$LINENO" 5;;
   esac
