@@ -757,8 +757,17 @@ riscv_insn_ext_v = \
 	$(riscv_insn_ext_v_amo) \
 	$(riscv_insn_ext_v_ctrl) \
 	$(riscv_insn_ext_v_ldst) \
-
-riscv_insn_ext_xpulpimg = \
+	
+	
+riscv_insn_ext_pulphwloop = \
+	lp_starti \
+	lp_endi \
+	lp_count \
+	lp_counti \
+	lp_setup \
+	lp_setupi \
+	
+riscv_insn_ext_pulppostmod = \
 	p_lb_irpost \
 	p_lbu_irpost \
 	p_lh_irpost \
@@ -783,26 +792,84 @@ riscv_insn_ext_xpulpimg = \
 	p_sb_rr \
 	p_sh_rr \
 	p_sw_rr \
+
+riscv_insn_ext_pulpabs = \
 	p_abs \
+
+riscv_insn_ext_pulpslet = \
 	p_slet \
 	p_sletu \
-	p_max \
-	p_maxu \
-	p_min \
-	p_minu \
-	p_exths \
-	p_exthz \
-	p_extbs \
-	p_extbz \
-	p_clip \
-	p_clipu \
-	p_clipr \
-	p_clipur \
-	p_beqimm \
-	p_bneimm \
+	
+riscv_insn_ext_pulpmacsi = \
 	p_mac \
 	p_msu \
-	pv_add_h \
+	
+riscv_insn_ext_pulpmulrnhi = \
+  p_mulhhs \
+  p_mulhhu \
+  p_muls \
+  p_mulu \
+  p_mulsN \
+  p_mulsRN \
+  p_muluN \
+  p_muluRN \
+  p_mulhhsN \
+  p_mulhhuN \
+  p_mulhhsRN \
+  p_mulhhuRN \
+	
+riscv_insn_ext_pulpmacrnhi = \
+  p_macsN \
+  p_macuN \
+  p_macsRN \
+  p_macuRN \
+  p_machhsN \
+  p_machhuN \
+  p_machhsRN \
+  p_machhuRN \
+
+riscv_insn_ext_pulppartmac = \
+	p_macs \
+	p_macu \
+	p_machhs \
+	p_machhu \
+	
+riscv_insn_ext_pulpminmax = \
+	p_min \
+	p_max \
+	p_minu \
+	p_maxu \
+	
+riscv_insn_ext_pulpbitop = \
+  p_cnt \
+  p_exths \
+  p_exthz \
+  p_extbs \
+  p_extbz \
+  
+# riscv_insn_ext_pulpbitop = \
+#  p_extract \
+#  p_extractr \
+#  p_extractu \
+#  p_extractur \
+#  p_insert \
+#  p_insertr \
+#  p_bset \
+#  p_bsetr \
+#  p_bclr \
+#  p_bclrr \
+#  p_cnt \
+#  p_clb \
+#  p_fl1 \
+#  p_ff1 \
+#  p_ror \
+#  p_exths \
+#  p_exthz \
+#  p_extbs \
+#  p_extbz \
+	
+riscv_insn_ext_pulpvect = \
+  pv_add_h \
 	pv_add_sc_h \
 	pv_add_sci_h \
 	pv_add_b \
@@ -930,8 +997,83 @@ riscv_insn_ext_xpulpimg = \
 	pv_sdotsp_b \
 	pv_sdotsp_sc_b \
 	pv_sdotsp_sci_b \
-	pv_shuffle2_h \
-	pv_shuffle2_b \
+	
+riscv_insn_ext_pulpvectshufflepack = \
+  pv_shuffle.h \
+  pv_shuffle.sci.h \
+  pv_shuffle.b \
+  pv_shufflei0.sci.b \
+  pv_shufflei1.sci.b \
+  pv_shufflei2.sci.b \
+  pv_shufflei3.sci.b \
+  pv_shuffle2.h \
+  pv_shuffle2.b \
+  pv_pack \
+  pv_pack.h \
+  pv_packhi.b \
+  pv_packlo.b \
+
+riscv_insn_ext_pulpclip = \
+  p_clip \
+	p_clipu \
+	p_clipr \
+	p_clipur \
+	
+riscv_insn_ext_pulpaddsubrn = \
+  p_addn \
+  p_addnr \
+  p_addun \
+  p_addunr \
+  p_addrn \
+  p_addrnr \
+  p_addurn \
+  p_addurnr \
+  p_subn \
+  p_subnr \
+  p_subun \
+  p_subunr \
+  p_subrn \
+  p_subrnr \
+  p_suburn \
+  p_suburnr \
+
+riscv_insn_ext_pulpbr = \
+  p_beqimm \
+  p_bneimm \
+
+riscv_insn_ext_pulpbitrev = \
+  p_bitrev \
+
+riscv_insn_ext_pulpimg = \
+	$(riscv_insn_ext_pulppostmod) \
+	$(riscv_insn_ext_pulpabs) \
+	$(riscv_insn_ext_pulpslet) \
+	$(riscv_insn_ext_pulpmacsi) \
+	$(riscv_insn_ext_pulpmacrnhi) \
+	$(riscv_insn_ext_pulpminmax) \
+	$(riscv_insn_ext_pulpbitop) \
+	$(riscv_insn_ext_pulpvect) \
+	$(riscv_insn_ext_pulpclip) \
+	$(riscv_insn_ext_pulpbr)
+
+# riscv_insn_ext_pulpimg = \
+#	$(riscv_insn_ext_pulphwloop) \
+#	$(riscv_insn_ext_pulppostmod) \
+#	$(riscv_insn_ext_pulpabs) \
+#	$(riscv_insn_ext_pulpslet) \
+#	$(riscv_insn_ext_pulpmacsi) \
+#	$(riscv_insn_ext_pulpmulrnhi) \
+#	$(riscv_insn_ext_pulpmacrnhi) \
+#	$(riscv_insn_ext_pulppartmac) \
+#	$(riscv_insn_ext_pulpminmax) \
+#	$(riscv_insn_ext_pulpbitop) \
+#	$(riscv_insn_ext_pulpvect) \
+#	$(riscv_insn_ext_pulpvectshufflepack) \
+#	$(riscv_insn_ext_pulpclip) \
+#	$(riscv_insn_ext_pulpaddsubrn) \
+#	$(riscv_insn_ext_pulpbr) \
+#	$(riscv_insn_ext_pulpbitrev) \
+
 
 riscv_insn_ext_h = \
 	hfence_gvma \
@@ -975,7 +1117,7 @@ riscv_insn_list = \
 	$(riscv_insn_ext_d) \
 	$(riscv_insn_ext_zfh) \
 	$(riscv_insn_ext_q) \
-	$(riscv_insn_ext_xpulpimg) \
+	$(riscv_insn_ext_pulpimg) \
 	$(riscv_insn_ext_h) \
 	$(riscv_insn_priv) \
 	# $(if $(HAVE_INT128),$(riscv_insn_ext_v),) \
@@ -1000,3 +1142,4 @@ $(riscv_gen_srcs): %.cc: insns/%.h insn_template.cc
 
 riscv_junk = \
 	$(riscv_gen_srcs) \
+	
