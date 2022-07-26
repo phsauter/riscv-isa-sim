@@ -129,9 +129,10 @@ public:
   uint64_t v_mew() { return x(28, 1); }
 
   // Xpulpimg
-  uint64_t p_zimm5() { return x(20, 5); }
-  int64_t p_simm5() { return xs(20, 5); }
-  uint64_t p_rs3() { return x(7, 5); }
+  uint64_t p_Luimm5() { return x(25, 5); }  // [29:25]
+  uint64_t p_zimm5() { return x(20, 5); }   // [24:20]
+  int64_t p_simm5() { return xs(20, 5); }   // [24:20]
+  uint64_t p_rs3() { return x(7, 5); }      // [11:07]
   uint64_t p_zimm6() { return x(25,1) + (x(20, 5) << 1); }
   int64_t p_simm6() { return x(25,1) + (xs(20, 5) << 1); }
 
