@@ -493,6 +493,7 @@ disassembler_t::disassembler_t(int xlen)
   #define DEFINE_PI1ZTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm6})
   #define DEFINE_PI1STYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm6})
   #define DEFINE_PBTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm5, &branch_target})
+  #define DEFINE_PR2ITYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &xrs2, &p_simm5})
 
   DEFINE_XLOAD(lb)
   DEFINE_XLOAD(lbu)
@@ -1373,6 +1374,7 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_R1TYPE(p_exthz);
   DEFINE_R1TYPE(p_extbs);
   DEFINE_R1TYPE(p_extbz);
+  DEFINE_R1TYPE(p_cnt);
   DEFINE_PI0TYPE(p_clip);
   DEFINE_PI0TYPE(p_clipu);
   DEFINE_RTYPE(p_clipr);
@@ -1381,6 +1383,16 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_PBTYPE(p_bneimm);
   DEFINE_RTYPE(p_mac);
   DEFINE_RTYPE(p_msu);
+
+  // xpulpmacrnhi
+  DEFINE_PR2ITYPE(p_macuN);
+  DEFINE_PR2ITYPE(p_machhuN);
+  DEFINE_PR2ITYPE(p_macsN);
+  DEFINE_PR2ITYPE(p_machhsN);
+  DEFINE_PR2ITYPE(p_macuRN);
+  DEFINE_PR2ITYPE(p_machhuRN);
+  DEFINE_PR2ITYPE(p_macsRN);
+  DEFINE_PR2ITYPE(p_machhsRN);
 
   DEFINE_RTYPE(pv_add_h);
   DEFINE_RTYPE(pv_add_sc_h);
