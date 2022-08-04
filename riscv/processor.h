@@ -213,6 +213,15 @@ struct state_t
 
   uint32_t fflags;
   uint32_t frm;
+
+  // xpulphwloop
+  reg_t lpstart0;
+  reg_t lpend0;
+  reg_t lpcount0;
+  reg_t lpstart1;
+  reg_t lpend1;
+  reg_t lpcount1;
+
   bool serialized; // whether timer CSRs are in a well-defined state
 
   // When true, execute a single instruction and then enter debug mode.  This
@@ -525,6 +534,41 @@ public:
   };
 
   vectorUnit_t VU;
+
+
+  // PULP HW-Loop extension (xpulphwloop)
+  class hwLoopUnit_t {
+    public:
+      processor_t* p;
+
+      bool lp_active[2];
+      bool any_active;  // set if any group of count, start and end are valid
+
+      hwLoopUnit_t() : 
+        p(0) {
+        any_active = false;
+      }
+
+      void set_active(int i); // handles exceptions and sets active-flags
+
+      reg_t handle_loops(reg_t pc, reg_t npc, insn_t insn); // returns npc
+
+      // Control and Status Register access (callable by instructions)
+      // It woul also be possible to use p->get_csr here but since
+      // hwloop doesn't have side effect this is fine and faster
+      reg_t get_start(int lpNr) { return (lpNr) ? p->state.lpstart1 : p->state.lpstart0; }
+      reg_t get_end(int lpNr)   { return (lpNr) ? p->state.lpend1 : p->state.lpend0; }
+      reg_t get_count(int lpNr) { return (lpNr) ? p->state.lpcount1 : p->state.lpcount0; }
+
+      // also used in set_csr() to make sure csr-write commands also
+      // check for constraints and throw exception
+      // setters take insn to throw illegal_instruction
+      void set_start(int loopNr, reg_t val);
+      void set_end(int loopNr, reg_t val);
+      void set_count(int loopNr, reg_t val);
+  };
+  hwLoopUnit_t hwLoops;
+
 };
 
 reg_t illegal_instruction(processor_t* p, insn_t insn, reg_t pc);

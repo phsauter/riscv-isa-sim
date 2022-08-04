@@ -31,6 +31,11 @@ processor_t::processor_t(const char* isa, const char* priv, const char* varch,
 {
   VU.p = this;
 
+  // Todo: check for subset, not instruction in subset
+  #ifdef MATCH_LP_SETUPI
+    hwLoops.p = this;
+  #endif
+
   parse_isa_string(isa);
   parse_priv_string(priv);
   parse_varch_string(varch);
@@ -1219,6 +1224,25 @@ void processor_t::set_csr(int which, reg_t val)
       dirty_vs_state;
       VU.vxrm = val & 0x3ul;
       break;
+    // xpulphwloop
+    case CSR_LPSTART0:
+      hwLoops.set_start(0, val);
+      break;
+    case CSR_LPEND0:
+      hwLoops.set_end(0, val);
+      break;
+    case CSR_LPCOUNT0:
+      hwLoops.set_count(0, val);
+      break;
+    case CSR_LPSTART1:
+      hwLoops.set_start(1, val);
+      break;
+    case CSR_LPEND1:
+      hwLoops.set_end(1, val);
+      break;
+    case CSR_LPCOUNT1:
+      hwLoops.set_count(1, val);
+      break;
   }
 
 #if defined(RISCV_ENABLE_COMMITLOG)
@@ -1640,6 +1664,25 @@ reg_t processor_t::get_csr(int which, insn_t insn, bool write, bool peek)
       if (!supports_extension('V'))
         break;
       ret(VU.vlenb);
+    // xpulphwloop
+    case CSR_LPSTART0:
+      ret(state.lpstart0);
+      break;
+    case CSR_LPEND0:
+      ret(state.lpend0);
+      break;
+    case CSR_LPCOUNT0:
+      ret(state.lpcount0);
+      break;
+    case CSR_LPSTART1:
+      ret(state.lpstart1);
+      break;
+    case CSR_LPEND1:
+      ret(state.lpend1);
+      break;
+    case CSR_LPCOUNT1:
+      ret(state.lpcount1);
+      break;
   }
 
 #undef ret
@@ -1812,4 +1855,93 @@ void processor_t::trigger_updated()
       mmu->check_triggers_store = true;
     }
   }
+}
+
+
+// PULP HW-Loop extension (xpulphwloop)
+
+// sets activate flag for loops and overall unit
+void processor_t::hwLoopUnit_t::set_active(int i)
+{
+  bool valid_body = get_start(i) < get_end(i);
+  lp_active[i] = valid_body && (get_count(i) > 0);
+  any_active |= lp_active[i];
+
+  // Constraint: loop body must be at least 3 instructions
+  if(lp_active[i] && (get_start(i) +8 > get_end(i))) {
+    throw trap_illegal_instruction(0);
+  }
+}
+
+// CSR write methods with the side-effects (set activate, check constraints)
+void processor_t::hwLoopUnit_t::set_start(int loopNr, reg_t val) { 
+  if(loopNr) {
+    p->state.lpstart1 = val;
+  } else {
+    p->state.lpstart0 = val;
+  }
+  set_active(loopNr);
+}
+
+void processor_t::hwLoopUnit_t::set_end(int loopNr, reg_t val) { 
+  if(loopNr) {
+    p->state.lpend1 = val;
+  } else {
+    p->state.lpend0 = val;
+  }
+  // Constraint: outer-end must be at least 2 instructions after inner-end
+  if(p->state.lpend0 +8 > p->state.lpend1) {
+    throw trap_illegal_instruction(0);
+  }
+  set_active(loopNr);
+}
+
+void processor_t::hwLoopUnit_t::set_count(int loopNr, reg_t val) { 
+  if(loopNr) {
+    p->state.lpcount1 = val;
+  } else {
+    p->state.lpcount0 = val;
+  }
+  set_active(loopNr);
+}
+
+// Executed after execution of instruction
+// pc:  current pc (state.pc)
+// npc: next pc (from instruction)
+// returns next pc (can be modifed due to hw-loop)
+reg_t processor_t::hwLoopUnit_t::handle_loops(reg_t pc, reg_t npc, insn_t insn)
+{
+  // immediately break if inactive as to not degrade performance
+  if(!any_active) { 
+    return npc;
+  }
+
+  for(int i=0; i<2; i++) {
+    // active and in body
+    if(lp_active[i] && get_start(i) <= pc && pc <= get_end(i)) {
+      // Constraints: if not met -> throw trap_illegal_instruction(insn.bits())
+      // no compressed instructions
+      if(insn.length() < 4) {
+        throw trap_illegal_instruction(insn.bits());
+      }
+      // Todo: Finish constraint checks
+      // no unconditional jumps
+      // no conditional branching
+      // no priviliged instructions except ebreak
+      // no memory ordering (fence) instr
+
+      if(pc == get_end(i)) {
+        reg_t remaining = get_count(i) -1;
+        set_count(i, remaining);
+        lp_active[i] &= (remaining > 0);
+        any_active = lp_active[0] || lp_active[1];
+
+        if(lp_active[i]) {
+          return get_start(i);
+        }
+      }
+    }
+  }
+
+  return npc;
 }

@@ -129,10 +129,13 @@ public:
   uint64_t v_mew() { return x(28, 1); }
 
   // Xpulpimg
+  uint64_t p_uimmL() { return x(20, 12); }  // [31:20] same bits as I-type imm12
+  uint64_t p_uimmS() { return x(15, 5); }   // [19:15] same bits as RS1
+  uint64_t p_loop() { return x(7, 1); }     // [7] called 'L' in the docs
   uint64_t p_Luimm5() { return x(25, 5); }  // [29:25]
   uint64_t p_zimm5() { return x(20, 5); }   // [24:20]
   int64_t p_simm5() { return xs(20, 5); }   // [24:20]
-  uint64_t p_rs3() { return x(7, 5); }      // [11:07]
+  uint64_t p_rs3() { return x(7, 5); }      // [11:07] alias for RD
   uint64_t p_zimm6() { return x(25,1) + (x(20, 5) << 1); }
   int64_t p_simm6() { return x(25,1) + (xs(20, 5) << 1); }
 

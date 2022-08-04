@@ -357,6 +357,25 @@ struct : public arg_t {
 
 struct : public arg_t {
   std::string to_string(insn_t insn) const {
+    return std::to_string((uint32_t)insn.p_uimmL());
+  }
+} p_uimmL;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    return std::to_string((uint32_t)insn.p_uimmS());
+  }
+} p_uimmS;
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    return std::to_string((uint32_t)insn.p_loop());
+  }
+} p_loop;
+
+
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
     return std::to_string((uint32_t)insn.p_zimm5());
   }
 } p_zimm5;
@@ -1393,6 +1412,13 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_PR2ITYPE(p_machhuRN);
   DEFINE_PR2ITYPE(p_macsRN);
   DEFINE_PR2ITYPE(p_machhsRN);
+
+  // xpulphwloop
+  DISASM_INSN("lp_starti", lp_starti, 0, {&p_loop, &p_uimmL});
+  DISASM_INSN("lp_endi", lp_endi, 0, {&p_loop, &p_uimmL});
+  DISASM_INSN("lp_count", lp_count, 0, {&p_loop, &xrs1});
+  DISASM_INSN("lp_setup", lp_setup, 0, {&p_loop, &xrs1, &p_uimmL});
+  DISASM_INSN("lp_setupi", lp_setupi, 0, {&p_loop, &p_uimmL, &p_uimmS});
 
   DEFINE_RTYPE(pv_add_h);
   DEFINE_RTYPE(pv_add_sc_h);

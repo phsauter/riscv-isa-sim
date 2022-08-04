@@ -1046,6 +1046,7 @@ riscv_insn_ext_pulpbitrev = \
 
 riscv_insn_ext_pulpimg = \
 	$(riscv_insn_ext_pulppostmod) \
+	$(riscv_insn_ext_pulphwloop) \
 	$(riscv_insn_ext_pulpabs) \
 	$(riscv_insn_ext_pulpslet) \
 	$(riscv_insn_ext_pulpmacsi) \

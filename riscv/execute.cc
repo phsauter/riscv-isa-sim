@@ -273,6 +273,7 @@ void processor_t::step(size_t n)
           if (debug && !state.serialized)
             disasm(fetch.insn);
           pc = execute_insn(this, pc, fetch);
+          pc = this->hwLoops.handle_loops(state.pc, pc, fetch.insn);
           advance_pc();
         }
       }
@@ -305,9 +306,13 @@ void processor_t::step(size_t n)
         // This macro is included in "icache.h" included within the switch
         // statement below. The indirect jump corresponding to the instruction
         // is located within the execute_insn() function call.
+        
+        // Todo: Is it a good idea to add hwloops here or is forcing slow-path better?
+        // trade-off between speed of hwloops and speed of everything else
         #define ICACHE_ACCESS(i) { \
           insn_fetch_t fetch = ic_entry->data; \
           pc = execute_insn(this, pc, fetch); \
+          pc = this->hwLoops.handle_loops(state.pc, pc, fetch.insn);  \
           ic_entry = ic_entry->next; \
           if (i == mmu_t::ICACHE_ENTRIES-1) break; \
           if (unlikely(ic_entry->tag != pc)) break; \
