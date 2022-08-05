@@ -1416,6 +1416,7 @@ disassembler_t::disassembler_t(int xlen)
   // xpulphwloop
   DISASM_INSN("lp_starti", lp_starti, 0, {&p_loop, &p_uimmL});
   DISASM_INSN("lp_endi", lp_endi, 0, {&p_loop, &p_uimmL});
+  DISASM_INSN("lp_counti", lp_counti, 0, {&p_loop, &p_uimmL});
   DISASM_INSN("lp_count", lp_count, 0, {&p_loop, &xrs1});
   DISASM_INSN("lp_setup", lp_setup, 0, {&p_loop, &xrs1, &p_uimmL});
   DISASM_INSN("lp_setupi", lp_setupi, 0, {&p_loop, &p_uimmL, &p_uimmS});
