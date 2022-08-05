@@ -31,10 +31,7 @@ processor_t::processor_t(const char* isa, const char* priv, const char* varch,
 {
   VU.p = this;
 
-  // Todo: check for subset, not instruction in subset
-  #ifdef MATCH_LP_SETUPI
-    hwLoops.p = this;
-  #endif
+  hwLoops.p = this;
 
   parse_isa_string(isa);
   parse_priv_string(priv);
