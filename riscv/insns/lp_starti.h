@@ -1,4 +1,4 @@
-reg_t offset = insn.p_uimmL() << 1;
+reg_t offset = zext_xlen(insn.p_uimmL() << 1);
 bool loopNr = insn.p_loop();
 
 reg_t start_addr = pc + offset;
