@@ -1048,6 +1048,7 @@ riscv_insn_ext_pulpimg = \
 	$(riscv_insn_ext_pulpmacsi) \
 	$(riscv_insn_ext_pulpmacrnhi) \
 	$(riscv_insn_ext_pulpminmax) \
+	$(riscv_insn_ext_pulpbitrev) \
 	$(riscv_insn_ext_pulpbitop) \
 	$(riscv_insn_ext_pulpvect) \
 	$(riscv_insn_ext_pulpclip) \
