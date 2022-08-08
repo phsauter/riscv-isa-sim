@@ -26,9 +26,4 @@ reg_t cnt;
 
 #endif
 
-std::cout << "bin: " << std::hex << (__builtin_clrsb(val)) << std::endl;
-std::cout << "val: " << std::hex << val << std::endl;
-std::cout << "cnt: " << cnt << std::endl;
-
-
 WRITE_RD(cnt);
