@@ -840,33 +840,29 @@ riscv_insn_ext_pulpminmax = \
 	p_minu \
 	p_maxu \
 	
-riscv_insn_ext_pulpbitop = \
+riscv_insn_ext_pulpbitopsmall = \
   p_cnt \
+  p_clb \
+  p_fl1 \
+  p_ff1 \
+  p_ror \
   p_exths \
   p_exthz \
   p_extbs \
   p_extbz \
   
-# riscv_insn_ext_pulpbitop = \
-#  p_extract \
-#  p_extractr \
-#  p_extractu \
-#  p_extractur \
-#  p_insert \
-#  p_insertr \
-#  p_bset \
-#  p_bsetr \
-#  p_bclr \
-#  p_bclrr \
-#  p_cnt \
-#  p_clb \
-#  p_fl1 \
-#  p_ff1 \
-#  p_ror \
-#  p_exths \
-#  p_exthz \
-#  p_extbs \
-#  p_extbz \
+riscv_insn_ext_pulpbitop = \
+  $(riscv_insn_ext_pulpbitopsmall) \
+  p_extract \
+  p_extractr \
+  p_extractu \
+  p_extractur \
+  p_insert \
+  p_insertr \
+  p_bset \
+  p_bsetr \
+  p_bclr \
+  p_bclrr \
 	
 riscv_insn_ext_pulpvect = \
   pv_add_h \

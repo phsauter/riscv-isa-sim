@@ -511,6 +511,7 @@ disassembler_t::disassembler_t(int xlen)
   #define DEFINE_PI0TYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm5})
   #define DEFINE_PI1ZTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm6})
   #define DEFINE_PI1STYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm6})
+  #define DEFINE_PI2TYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm5, &p_zimm5})
   #define DEFINE_PBTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm5, &branch_target})
   #define DEFINE_PR2ITYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &xrs2, &p_simm5})
 
@@ -1389,11 +1390,6 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_RTYPE(p_minu);
   DEFINE_RTYPE(p_max);
   DEFINE_RTYPE(p_maxu);
-  DEFINE_R1TYPE(p_exths);
-  DEFINE_R1TYPE(p_exthz);
-  DEFINE_R1TYPE(p_extbs);
-  DEFINE_R1TYPE(p_extbz);
-  DEFINE_R1TYPE(p_cnt);
   DEFINE_PI0TYPE(p_clip);
   DEFINE_PI0TYPE(p_clipu);
   DEFINE_RTYPE(p_clipr);
@@ -1402,6 +1398,28 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_PBTYPE(p_bneimm);
   DEFINE_RTYPE(p_mac);
   DEFINE_RTYPE(p_msu);
+
+  // xpulpbitop
+  DEFINE_PI2TYPE(p_extract);
+  DEFINE_RTYPE(p_extractr);
+  DEFINE_PI2TYPE(p_extractu);
+  DEFINE_RTYPE(p_extractur);
+  DEFINE_PI2TYPE(p_insert);
+  DEFINE_RTYPE(p_insertr);
+  DEFINE_PI2TYPE(p_bset);
+  DEFINE_RTYPE(p_bsetr);
+  DEFINE_PI2TYPE(p_bclr);
+  DEFINE_RTYPE(p_bclrr);
+  // xpulpbitopsmall (subset of xpulpbitop)
+  DEFINE_R1TYPE(p_exths);
+  DEFINE_R1TYPE(p_exthz);
+  DEFINE_R1TYPE(p_extbs);
+  DEFINE_R1TYPE(p_extbz);
+  DEFINE_RTYPE(p_ror);
+  DEFINE_R1TYPE(p_ff1);
+  DEFINE_R1TYPE(p_fl1);
+  DEFINE_R1TYPE(p_clb);
+  DEFINE_R1TYPE(p_cnt);
 
   // xpulpmacrnhi
   DEFINE_PR2ITYPE(p_macuN);

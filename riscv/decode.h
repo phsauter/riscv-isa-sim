@@ -292,6 +292,9 @@ private:
 #define sext8(x)  ((sreg_t)(int8_t)(x))
 #define zext8(x)  ((reg_t)(uint8_t)(x))
 
+#define sextr(x, u, l) ( (sreg_t)( ((sreg_t)x) << (63-(u)) >> ((l)+63-(u)) ) )  // sext(x[u:l])
+#define zextr(x, u, l) ((reg_t)( ((x) >> l) & ( (1 << ((u)-(l)+1))-1 ) ))       // zext(x[u:l])
+
 #define P_RS3 READ_REG(insn.p_rs3()) /* same as RD, just different semantical value */
 #define WRITE_RS1(value) WRITE_REG(insn.rs1(), value)
 
