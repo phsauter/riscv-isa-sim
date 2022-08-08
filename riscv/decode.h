@@ -404,8 +404,8 @@ inline long double to_f(float128_t f){long double r; memcpy(&r, &f, sizeof(r)); 
 #define e512 512  // 512b elements
 #define e1024 1024  // 1024b elements
 
-#define vsext(x, sew) (((sreg_t)(x) << (64-sew)) >> (64-sew))
-#define vzext(x, sew) (((reg_t)(x) << (64-sew)) >> (64-sew))
+#define vsext(x, sew) ( ((sreg_t)(x) << (64-(sew))) >> (64-(sew)) )
+#define vzext(x, sew) ( ((reg_t)(x) << (64-(sew))) >> (64-(sew)) )
 
 #define DEBUG_RVV 0
 
