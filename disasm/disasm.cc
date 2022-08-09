@@ -1444,6 +1444,24 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_PR2ITYPE(p_macsRN);
   DEFINE_PR2ITYPE(p_machhsRN);
 
+  // xpulpaddsubrn
+  DEFINE_PR2ITYPE(p_addN);
+  DEFINE_PR2ITYPE(p_adduN);
+  DEFINE_PR2ITYPE(p_addRN);
+  DEFINE_PR2ITYPE(p_adduRN);
+  DEFINE_PR2ITYPE(p_subN);
+  DEFINE_PR2ITYPE(p_subuN);
+  DEFINE_PR2ITYPE(p_subRN);
+  DEFINE_PR2ITYPE(p_subuRN);
+  DEFINE_RTYPE(p_addNr);
+  DEFINE_RTYPE(p_adduNr);
+  DEFINE_RTYPE(p_addRNr);
+  DEFINE_RTYPE(p_adduRNr);
+  DEFINE_RTYPE(p_subNr);
+  DEFINE_RTYPE(p_subuNr);
+  DEFINE_RTYPE(p_subRNr);
+  DEFINE_RTYPE(p_subuRNr);
+
   // xpulphwloop
   DISASM_INSN("lp_starti", lp_starti, 0, {&p_loop, &p_uimmL});
   DISASM_INSN("lp_endi", lp_endi, 0, {&p_loop, &p_uimmL});

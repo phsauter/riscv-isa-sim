@@ -1012,22 +1012,22 @@ riscv_insn_ext_pulpclip = \
 	p_clipur \
 	
 riscv_insn_ext_pulpaddsubrn = \
-  p_addn \
-  p_addnr \
-  p_addun \
-  p_addunr \
-  p_addrn \
-  p_addrnr \
-  p_addurn \
-  p_addurnr \
-  p_subn \
-  p_subnr \
-  p_subun \
-  p_subunr \
-  p_subrn \
-  p_subrnr \
-  p_suburn \
-  p_suburnr \
+  p_addN \
+  p_adduN \
+  p_addRN \
+  p_adduRN \
+  p_subN \
+  p_subuN \
+  p_subRN \
+  p_subuRN \
+  p_addNr \
+  p_adduNr \
+  p_addRNr \
+  p_adduRNr \
+  p_subNr \
+  p_subuNr \
+  p_subRNr \
+  p_subuRNr \
 
 riscv_insn_ext_pulpbr = \
   p_beqimm \
@@ -1044,6 +1044,7 @@ riscv_insn_ext_pulpimg = \
 	$(riscv_insn_ext_pulpmacsi) \
 	$(riscv_insn_ext_pulpmulrnhi) \
 	$(riscv_insn_ext_pulpmacrnhi) \
+	$(riscv_insn_ext_pulpaddsubrn) \
 	$(riscv_insn_ext_pulpminmax) \
 	$(riscv_insn_ext_pulpbitrev) \
 	$(riscv_insn_ext_pulpbitop) \
