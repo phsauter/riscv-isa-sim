@@ -1424,6 +1424,16 @@ disassembler_t::disassembler_t(int xlen)
   // xpulpbitrev
   DEFINE_PI2TYPE(p_bitrev);
 
+  // xpulpmulrnhi
+  DEFINE_PR2ITYPE(p_muluN);
+  DEFINE_PR2ITYPE(p_mulhhuN);
+  DEFINE_PR2ITYPE(p_mulsN);
+  DEFINE_PR2ITYPE(p_mulhhsN);
+  DEFINE_PR2ITYPE(p_muluRN);
+  DEFINE_PR2ITYPE(p_mulhhuRN);
+  DEFINE_PR2ITYPE(p_mulsRN);
+  DEFINE_PR2ITYPE(p_mulhhsRN);
+
   // xpulpmacrnhi
   DEFINE_PR2ITYPE(p_macuN);
   DEFINE_PR2ITYPE(p_machhuN);

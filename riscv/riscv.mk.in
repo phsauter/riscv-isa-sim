@@ -805,10 +805,6 @@ riscv_insn_ext_pulpmacsi = \
 	p_msu \
 	
 riscv_insn_ext_pulpmulrnhi = \
-  p_mulhhs \
-  p_mulhhu \
-  p_muls \
-  p_mulu \
   p_mulsN \
   p_mulsRN \
   p_muluN \
@@ -1046,6 +1042,7 @@ riscv_insn_ext_pulpimg = \
 	$(riscv_insn_ext_pulpabs) \
 	$(riscv_insn_ext_pulpslet) \
 	$(riscv_insn_ext_pulpmacsi) \
+	$(riscv_insn_ext_pulpmulrnhi) \
 	$(riscv_insn_ext_pulpmacrnhi) \
 	$(riscv_insn_ext_pulpminmax) \
 	$(riscv_insn_ext_pulpbitrev) \
