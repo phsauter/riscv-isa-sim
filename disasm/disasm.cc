@@ -1600,8 +1600,20 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_RTYPE(pv_sdotsp_sc_b);
   DEFINE_PI1ZTYPE(pv_sdotsp_sci_b);
 
+  // xpulpvectshufflepack
+  DEFINE_RTYPE(pv_shuffle_h);
+  DEFINE_PI1ZTYPE(pv_shuffle_sci_h);
+  DEFINE_RTYPE(pv_shuffle_b);
+  DEFINE_PI1ZTYPE(pv_shufflei0_sci_b);
+  DEFINE_PI1ZTYPE(pv_shufflei1_sci_b);
+  DEFINE_PI1ZTYPE(pv_shufflei2_sci_b);
+  DEFINE_PI1ZTYPE(pv_shufflei3_sci_b);
   DEFINE_RTYPE(pv_shuffle2_h);
   DEFINE_RTYPE(pv_shuffle2_b);
+  DEFINE_RTYPE(pv_pack);
+  DEFINE_RTYPE(pv_pack_h);
+  DEFINE_RTYPE(pv_packhi_b);
+  DEFINE_RTYPE(pv_packlo_b);
 
   // provide a default disassembly for all instructions as a fallback
   #define DECLARE_INSN(code, match, mask) \
