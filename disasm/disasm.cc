@@ -373,6 +373,11 @@ struct : public arg_t {
   }
 } p_loop;
 
+struct : public arg_t {
+  std::string to_string(insn_t insn) const {
+    return std::to_string((uint32_t)insn.p_Luimm5());
+  }
+} p_Luimm5;
 
 struct : public arg_t {
   std::string to_string(insn_t insn) const {
@@ -511,9 +516,9 @@ disassembler_t::disassembler_t(int xlen)
   #define DEFINE_PI0TYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm5})
   #define DEFINE_PI1ZTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm6})
   #define DEFINE_PI1STYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm6})
-  #define DEFINE_PI2TYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_zimm5, &p_zimm5})
+  #define DEFINE_PLUI2TYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_Luimm5, &p_zimm5})
   #define DEFINE_PBTYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &p_simm5, &branch_target})
-  #define DEFINE_PR2ITYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &xrs2, &p_simm5})
+  #define DEFINE_PR2LUITYPE(code) DISASM_INSN(#code, code, 0, {&xrd, &xrs1, &xrs2, &p_Luimm5})
 
   DEFINE_XLOAD(lb)
   DEFINE_XLOAD(lbu)
@@ -1400,15 +1405,15 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_RTYPE(p_msu);
 
   // xpulpbitop
-  DEFINE_PI2TYPE(p_extract);
+  DEFINE_PLUI2TYPE(p_extract);
   DEFINE_RTYPE(p_extractr);
-  DEFINE_PI2TYPE(p_extractu);
+  DEFINE_PLUI2TYPE(p_extractu);
   DEFINE_RTYPE(p_extractur);
-  DEFINE_PI2TYPE(p_insert);
+  DEFINE_PLUI2TYPE(p_insert);
   DEFINE_RTYPE(p_insertr);
-  DEFINE_PI2TYPE(p_bset);
+  DEFINE_PLUI2TYPE(p_bset);
   DEFINE_RTYPE(p_bsetr);
-  DEFINE_PI2TYPE(p_bclr);
+  DEFINE_PLUI2TYPE(p_bclr);
   DEFINE_RTYPE(p_bclrr);
   // xpulpbitopsmall (subset of xpulpbitop)
   DEFINE_R1TYPE(p_exths);
@@ -1422,37 +1427,37 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_R1TYPE(p_cnt);
 
   // xpulpbitrev
-  DEFINE_PI2TYPE(p_bitrev);
+  DEFINE_PLUI2TYPE(p_bitrev);
 
   // xpulpmulrnhi
-  DEFINE_PR2ITYPE(p_muluN);
-  DEFINE_PR2ITYPE(p_mulhhuN);
-  DEFINE_PR2ITYPE(p_mulsN);
-  DEFINE_PR2ITYPE(p_mulhhsN);
-  DEFINE_PR2ITYPE(p_muluRN);
-  DEFINE_PR2ITYPE(p_mulhhuRN);
-  DEFINE_PR2ITYPE(p_mulsRN);
-  DEFINE_PR2ITYPE(p_mulhhsRN);
+  DEFINE_PR2LUITYPE(p_muluN);
+  DEFINE_PR2LUITYPE(p_mulhhuN);
+  DEFINE_PR2LUITYPE(p_mulsN);
+  DEFINE_PR2LUITYPE(p_mulhhsN);
+  DEFINE_PR2LUITYPE(p_muluRN);
+  DEFINE_PR2LUITYPE(p_mulhhuRN);
+  DEFINE_PR2LUITYPE(p_mulsRN);
+  DEFINE_PR2LUITYPE(p_mulhhsRN);
 
   // xpulpmacrnhi
-  DEFINE_PR2ITYPE(p_macuN);
-  DEFINE_PR2ITYPE(p_machhuN);
-  DEFINE_PR2ITYPE(p_macsN);
-  DEFINE_PR2ITYPE(p_machhsN);
-  DEFINE_PR2ITYPE(p_macuRN);
-  DEFINE_PR2ITYPE(p_machhuRN);
-  DEFINE_PR2ITYPE(p_macsRN);
-  DEFINE_PR2ITYPE(p_machhsRN);
+  DEFINE_PR2LUITYPE(p_macuN);
+  DEFINE_PR2LUITYPE(p_machhuN);
+  DEFINE_PR2LUITYPE(p_macsN);
+  DEFINE_PR2LUITYPE(p_machhsN);
+  DEFINE_PR2LUITYPE(p_macuRN);
+  DEFINE_PR2LUITYPE(p_machhuRN);
+  DEFINE_PR2LUITYPE(p_macsRN);
+  DEFINE_PR2LUITYPE(p_machhsRN);
 
   // xpulpaddsubrn
-  DEFINE_PR2ITYPE(p_addN);
-  DEFINE_PR2ITYPE(p_adduN);
-  DEFINE_PR2ITYPE(p_addRN);
-  DEFINE_PR2ITYPE(p_adduRN);
-  DEFINE_PR2ITYPE(p_subN);
-  DEFINE_PR2ITYPE(p_subuN);
-  DEFINE_PR2ITYPE(p_subRN);
-  DEFINE_PR2ITYPE(p_subuRN);
+  DEFINE_PR2LUITYPE(p_addN);
+  DEFINE_PR2LUITYPE(p_adduN);
+  DEFINE_PR2LUITYPE(p_addRN);
+  DEFINE_PR2LUITYPE(p_adduRN);
+  DEFINE_PR2LUITYPE(p_subN);
+  DEFINE_PR2LUITYPE(p_subuN);
+  DEFINE_PR2LUITYPE(p_subRN);
+  DEFINE_PR2LUITYPE(p_subuRN);
   DEFINE_RTYPE(p_addNr);
   DEFINE_RTYPE(p_adduNr);
   DEFINE_RTYPE(p_addRNr);
