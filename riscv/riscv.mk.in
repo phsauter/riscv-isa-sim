@@ -867,12 +867,18 @@ riscv_insn_ext_pulpvect = \
 	pv_add_b \
 	pv_add_sc_b \
 	pv_add_sci_b \
+	pv_add_h_div2 \
+	pv_add_h_div4 \
+	pv_add_h_div8 \
 	pv_sub_h \
 	pv_sub_sc_h \
 	pv_sub_sci_h \
 	pv_sub_b \
 	pv_sub_sc_b \
 	pv_sub_sci_b \
+	pv_sub_h_div2 \
+	pv_sub_h_div4 \
+	pv_sub_h_div8 \
 	pv_avg_h \
 	pv_avg_sc_h \
 	pv_avg_sci_h \
@@ -989,6 +995,66 @@ riscv_insn_ext_pulpvect = \
 	pv_sdotsp_b \
 	pv_sdotsp_sc_b \
 	pv_sdotsp_sci_b \
+	pv_cmpeq_h \
+	pv_cmpeq_sc_h \
+	pv_cmpeq_sci_h \
+	pv_cmpeq_b \
+	pv_cmpeq_sc_b \
+	pv_cmpeq_sci_b \
+	pv_cmpne_h \
+	pv_cmpne_sc_h \
+	pv_cmpne_sci_h \
+	pv_cmpne_b \
+	pv_cmpne_sc_b \
+	pv_cmpne_sci_b \
+	pv_cmpgt_h \
+	pv_cmpgt_sc_h \
+	pv_cmpgt_sci_h \
+	pv_cmpgt_b \
+	pv_cmpgt_sc_b \
+	pv_cmpgt_sci_b \
+	pv_cmpge_h \
+	pv_cmpge_sc_h \
+	pv_cmpge_sci_h \
+	pv_cmpge_b \
+	pv_cmpge_sc_b \
+	pv_cmpge_sci_b \
+	pv_cmplt_h \
+	pv_cmplt_sc_h \
+	pv_cmplt_sci_h \
+	pv_cmplt_b \
+	pv_cmplt_sc_b \
+	pv_cmplt_sci_b \
+	pv_cmple_h \
+	pv_cmple_sc_h \
+	pv_cmple_sci_h \
+	pv_cmple_b \
+	pv_cmple_sc_b \
+	pv_cmple_sci_b \
+	pv_cmpgtu_h \
+	pv_cmpgtu_sc_h \
+	pv_cmpgtu_sci_h \
+	pv_cmpgtu_b \
+	pv_cmpgtu_sc_b \
+	pv_cmpgtu_sci_b \
+	pv_cmpgeu_h \
+	pv_cmpgeu_sc_h \
+	pv_cmpgeu_sci_h \
+	pv_cmpgeu_b \
+	pv_cmpgeu_sc_b \
+	pv_cmpgeu_sci_b \
+	pv_cmpltu_h \
+	pv_cmpltu_sc_h \
+	pv_cmpltu_sci_h \
+	pv_cmpltu_b \
+	pv_cmpltu_sc_b \
+	pv_cmpltu_sci_b \
+	pv_cmpleu_h \
+	pv_cmpleu_sc_h \
+	pv_cmpleu_sci_h \
+	pv_cmpleu_b \
+	pv_cmpleu_sc_b \
+	pv_cmpleu_sci_b \
 	
 riscv_insn_ext_pulpvectshufflepack = \
   pv_shuffle_h \

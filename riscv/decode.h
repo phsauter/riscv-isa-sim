@@ -397,6 +397,20 @@ inline float to_f(float32_t f){float r; memcpy(&r, &f, sizeof(r)); return r;}
 inline double to_f(float64_t f){double r; memcpy(&r, &f, sizeof(r)); return r;}
 inline long double to_f(float128_t f){long double r; memcpy(&r, &f, sizeof(r)); return r;}
 
+
+// Interpret register as packed SIMD
+union simd_reg {
+    reg_t reg;
+    sreg_t sreg;
+    // halfwords (signed and unsigned)
+    int16_t h[4];
+    uint16_t hu[4];
+    // bytes (signed and unsigned)
+    int8_t b[8];
+    uint8_t bu[8];
+};
+
+
 // Vector macros
 #define e8 8      // 8b elements
 #define e16 16    // 16b elements
