@@ -1056,6 +1056,21 @@ riscv_insn_ext_pulpvect = \
 	pv_cmpleu_sc_b \
 	pv_cmpleu_sci_b \
 	
+riscv_insn_ext_pulpvectcomplex = \
+  pv_cplxconj_h \
+	pv_subrotmj_h \
+	pv_subrotmj_h_div2 \
+	pv_subrotmj_h_div4 \
+	pv_subrotmj_h_div8 \
+	pv_cplxmul_h_r \
+	pv_cplxmul_h_r_div2 \
+	pv_cplxmul_h_r_div4 \
+	pv_cplxmul_h_r_div8 \
+	pv_cplxmul_h_i \
+	pv_cplxmul_h_i_div2 \
+	pv_cplxmul_h_i_div4 \
+	pv_cplxmul_h_i_div8 \
+	
 riscv_insn_ext_pulpvectshufflepack = \
   pv_shuffle_h \
   pv_shuffle_sci_h \
@@ -1113,6 +1128,7 @@ riscv_insn_ext_pulpimg = \
 	$(riscv_insn_ext_pulpminmax) \
 	$(riscv_insn_ext_pulpbitop) \
 	$(riscv_insn_ext_pulpvect) \
+	$(riscv_insn_ext_pulpvectcomplex) \
 	$(riscv_insn_ext_pulpvectshufflepack) \
 	$(riscv_insn_ext_pulpclip) \
 	$(riscv_insn_ext_pulpaddsubrn) \

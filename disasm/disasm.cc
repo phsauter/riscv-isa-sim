@@ -1676,6 +1676,21 @@ disassembler_t::disassembler_t(int xlen)
   DEFINE_RTYPE(pv_cmpleu_sc_b);
   DEFINE_PI1ZTYPE(pv_cmpleu_sci_b);
 
+  // xpulpvectcomplex
+  DEFINE_R1TYPE(pv_cplxconj_h);
+  DEFINE_RTYPE(pv_subrotmj_h);
+  DEFINE_RTYPE(pv_subrotmj_h_div2);
+  DEFINE_RTYPE(pv_subrotmj_h_div4);
+  DEFINE_RTYPE(pv_subrotmj_h_div8);
+  DEFINE_RTYPE(pv_cplxmul_h_r);
+  DEFINE_RTYPE(pv_cplxmul_h_r_div2);
+  DEFINE_RTYPE(pv_cplxmul_h_r_div4);
+  DEFINE_RTYPE(pv_cplxmul_h_r_div8);
+  DEFINE_RTYPE(pv_cplxmul_h_i);
+  DEFINE_RTYPE(pv_cplxmul_h_i_div2);
+  DEFINE_RTYPE(pv_cplxmul_h_i_div4);
+  DEFINE_RTYPE(pv_cplxmul_h_i_div8);
+
   // xpulpvectshufflepack
   DEFINE_RTYPE(pv_shuffle_h);
   DEFINE_PI1ZTYPE(pv_shuffle_sci_h);
