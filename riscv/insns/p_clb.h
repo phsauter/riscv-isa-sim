@@ -1,5 +1,5 @@
-sreg_t val = sext_xlen(RS1);;
-reg_t cnt;
+reg_t val = sext_xlen(RS1);;
+reg_t cnt = 0;
 
 #ifdef __GNUC__
   if(val) {
@@ -8,20 +8,28 @@ reg_t cnt;
   } else {
     cnt = 0; // rs1 = 0 -> rd = 0, not 32
   }
-#elif
-  if(val == 0) {
-    cnt = 0; // rs1 = 0 -> rd = 0, not 32
-  } else {
-    if(val > 0) {
-      // turn leading 0s into leading 1s
+#else
+  if(val != 0x00) // rs1 = 0 -> rd = 0, not 32
+  {
+    if(val >= ((reg_t)1 << 31)) {
+      // turn leading 1s into leading 0s
       val = ~val;
     }
+    val <<= 1; // to distinguish -1 from -2
 
-    // log2() from standfords bithacks (find highest '1')
-    while (val >>= 1)
+    // modified log2() from standfords bithacks (find highest '1')
+    const unsigned int b[] = {0x2, 0xC, 0xF0, 0xFF00, 0xFFFF0000};
+    const unsigned int S[] = {1, 2, 4, 8, 16};
+    for (int i = 4; i >= 0; i--)
     {
-      cnt++;
+      if (val & b[i])
+      {
+        val >>= S[i];
+        cnt |= S[i];
+      } 
     }
+
+    cnt = 32 - cnt; // pos of MSB+1 to #leading bits
   }
 
 #endif

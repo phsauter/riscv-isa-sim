@@ -9,10 +9,11 @@ reg_t cnt;
     } else {
       cnt--;
     }
-#elif
+#else
+  // count trailing zero bits from standfords bithacks
   cnt = 32;
   val &= -signed(val);
-  if (val) c--;
+  if (val) cnt--;
   if (val & 0x0000FFFF) cnt -= 16;
   if (val & 0x00FF00FF) cnt -= 8;
   if (val & 0x0F0F0F0F) cnt -= 4;
