@@ -8,6 +8,9 @@ Spike, the RISC-V ISA Simulator, implements a functional model of one or more
 RISC-V harts.  It is named after the golden spike used to celebrate the
 completion of the US transcontinental railway.
 
+This fork extends Spike to support custom PULP instructions.
+Together with the repos riscv-opcodes and riscv-tests, it forms a framework that aids in developing extensions, testing implementations and running applications.
+
 Spike supports the following RISC-V ISA features:
   - RV32I and RV64I base ISAs, v2.1
   - Zifencei extension, v2.0
@@ -22,6 +25,7 @@ Spike supports the following RISC-V ISA features:
   - Conformance to both RVWMO and RVTSO (Spike is sequentially consistent)
   - Machine, Supervisor, and User modes, v1.11
   - Debug v0.14
+  - All xpulpv3 extension subsets except xpulpelw
 
 Versioning and APIs
 -------------------
@@ -74,30 +78,49 @@ Install spike (see Build Steps), riscv-gnu-toolchain, and riscv-pk.
 Write a short C program and name it hello.c.  Then, compile it into a RISC-V
 ELF binary named hello:
 
-    $ riscv64-unknown-elf-gcc -o hello hello.c
+    $ riscv32-unknown-elf-gcc -o hello hello.c
 
 Now you can simulate the program atop the proxy kernel:
 
     $ spike pk hello
 
+Or on bare metal:
+
+```
+$ spike hello
+```
+
+[jonesinator/riscv-spike-minimal-assembly](https://github.com/jonesinator/riscv-spike-minimal-assembly) provides a well documented minimal bare metal program and also one which uses syscall to communicate with the host.
+
+For xpulp-specific examples take a look at the riscv-tests repo, in riscv-tests/isa it contains functional tests for all supported xpulp instructions.
+
 Simulating a New Instruction
 ------------------------------------
 
-Adding an instruction to the simulator requires two steps:
+Adding an instruction to the simulator requires these steps:
 
-  1.  Describe the instruction's functional behavior in the file
-      riscv/insns/<new_instruction_name>.h.  Examine other instructions
-      in that directory as a starting point.
+  1. Clone riscv-opcodes, add the opcode to it and generate encoding_out.h
 
-  2.  Add the opcode and opcode mask to riscv/opcodes.h.  Alternatively,
-      add it to the riscv-opcodes package, and it will do so for you:
-        ```
-         $ cd ../riscv-opcodes
-         $ vi opcodes       // add a line for the new instruction
-         $ make install
-        ```
+  2. Create a soft-link for riscv/encoding.h to the generated encoding_out.h
 
-  3.  Rebuild the simulator.
+     ```
+     $ ln -sfr riscv-opcodes/encoding_out.h riscv-isa-sim/riscv/encoding.h
+     ```
+
+  3. Describe the instruction's functional behavior in the file
+     riscv/insns/<new_instruction_name>.h.  Examine other instructions
+     in that directory as a starting point. Use macros from riscv/decode.h.
+
+  4. Add the mnemonic format (disassembly format) of the instruction to diasm/diasm.cc
+
+  5. In riscv/riscv.mk.in add the instruction to riscv_insn_list.
+     You can get all instructions from your current encoding.h (encoding_out.h) using:
+
+     ```
+     $ grep ^DECLARE_INSN encoding.h | sed 's/DECLARE_INSN(\(.*\),.*,.*)/\1/'
+     ```
+
+  6. Rebuild the simulator.
 
 Interactive Debug Mode
 ---------------------------
